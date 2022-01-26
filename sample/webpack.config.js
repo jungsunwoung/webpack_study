@@ -1,5 +1,6 @@
 const path = require("path");
-
+const MyWebpackPlugin = require("./my-webpack-plugin")
+const webpack = require("webpack")
 module.exports = {
     mode : "development",
     
@@ -18,13 +19,31 @@ module.exports = {
         rules:[
             {
                 //로더가 처리해야하는 파일들의 패턴.
-                test:/\.js$/,
+                test:/\.css$/,
                 //사용할 로더 명시
+                //뒤에서부터 앞으로 실행(css->style)
                 use:[
-                    path.resolve("./my-webpack-loader.js")
+                    "style-loader",
+                    "css-loader"
                 ]
+            },
+            {
+                //적은 용량은 url base encoding해서 사용
+                test:/\.(png|jpg)$/,
+                loader:"url-loader",
+                options:{
+                    publicPath:'./dist/',
+                    name: '[name].[ext]?[hash]',
+                    limit: 20000,//20kb
+                }
+                
             }
         ]
-    }
-
+    },
+    plugins:[
+        // new MyWebpackPlugin()
+        new webpack.BannerPlugin({
+            banner:"이건 배너양"
+        })
+    ]
 }
